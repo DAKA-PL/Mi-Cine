@@ -1,4 +1,4 @@
-package com.potter.micine
+package com.potter.micine.ui.form
 
 data class FormPeliculaUIState(
     val titulo: String = "",
