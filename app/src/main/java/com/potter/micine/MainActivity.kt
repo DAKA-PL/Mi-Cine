@@ -20,18 +20,22 @@ class MainActivity : ComponentActivity() {
 
         setContent {
 
-            // Estado para activar y desactivar el modo oscuro
+            // Segundo avance: modo oscuro
             var modoOscuro by rememberSaveable {
                 mutableStateOf(false)
             }
 
-            MICINETheme(darkTheme = modoOscuro) {
+            // Tercer avance: selector de idiomas
+            var idioma by rememberSaveable {
+                mutableStateOf("Español")
+            }
 
-                // Primer avance de Mi Perfil / Ajustes
-                // La navegación se integrará posteriormente
+            MICINETheme(darkTheme = modoOscuro) {
                 AjustesScreen(
                     modoOscuro = modoOscuro,
-                    onModoOscuroChange = { modoOscuro = it }
+                    onModoOscuroChange = { modoOscuro = it },
+                    idioma = idioma,
+                    onIdiomaChange = { idioma = it }
                 )
             }
         }
