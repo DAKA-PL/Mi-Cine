@@ -71,11 +71,6 @@ fun AjustesScreen(
                 style = MaterialTheme.typography.titleLarge
             )
 
-            AjustePendiente(
-                traducir("Sincronizar Datos", "Sync Data"),
-                traducir("Próximamente", "Coming Soon")
-            )
-
             // Segundo avance: modo oscuro
             Row(
                 modifier = Modifier
