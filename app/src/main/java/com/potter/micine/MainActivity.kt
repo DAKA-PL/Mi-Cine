@@ -5,19 +5,34 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import com.potter.micine.ui.settings.AjustesScreen
 import com.potter.micine.ui.theme.MICINETheme
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         setContent {
-            MICINETheme {
+
+            // Estado para activar y desactivar el modo oscuro
+            var modoOscuro by rememberSaveable {
+                mutableStateOf(false)
+            }
+
+            MICINETheme(darkTheme = modoOscuro) {
+
                 // Primer avance de Mi Perfil / Ajustes
                 // La navegación se integrará posteriormente
-                AjustesScreen()
+                AjustesScreen(
+                    modoOscuro = modoOscuro,
+                    onModoOscuroChange = { modoOscuro = it }
+                )
             }
         }
     }

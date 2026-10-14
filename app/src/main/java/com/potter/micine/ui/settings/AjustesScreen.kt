@@ -1,3 +1,4 @@
+
 package com.potter.micine.ui.settings
 
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,43 +26,94 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import com.potter.micine.ui.theme.MICINETheme
 
-/** Primer avance: diseño visual de Ajustes, sin operaciones de datos ni navegación.
- *  Esta vista solo presenta contenido. Las interacciones se implementarán en futuros commits.
+/**
+ * Primer avance: diseño visual de Ajustes.
+ * Se implementa la función de Modo Oscuro.
+ * Las demás opciones se implementarán posteriormente.
  */
 @Composable
-fun AjustesScreen(modifier: Modifier = Modifier) {
+fun AjustesScreen(
+    modoOscuro: Boolean,
+    onModoOscuroChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Scaffold(modifier = modifier) { innerPadding ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 22.dp, vertical = 24.dp),
+                .padding(
+                    horizontal = 22.dp,
+                    vertical = 24.dp
+                ),
             verticalArrangement = Arrangement.spacedBy(18.dp)
         ) {
+
             Text(
-                text = "Mi Cine  ▦",
+                text = "Mi Cine ",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
+
             Text(
                 text = "♙  Mi Perfil",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.SemiBold
             )
+
             HorizontalDivider()
-            Text("Preferencias", style = MaterialTheme.typography.titleLarge)
-            AjustePendiente("Sincronizar Datos")
-            AjustePendiente("Modo Oscuro")
-            Spacer(Modifier.height(6.dp))
-            Text("General", style = MaterialTheme.typography.titleLarge)
-            AjustePendiente("Idioma")
-            AjustePendiente("Notificaciones y Alertas")
-            AjustePendiente("Privacidad")
-            AjustePendiente("Borrar Historial")
-            HorizontalDivider()
+
             Text(
-                text = "Primer avance: estructura de la pantalla. Las opciones se habilitarán en siguientes entregas.",
+                text = "Preferencias",
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            AjustePendiente("Sincronizar Datos")
+
+            // Interruptor de Modo Oscuro
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 5.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+
+                Text(
+                    text = "Modo Oscuro",
+                    fontSize = 17.sp
+                )
+
+                Switch(
+                    checked = modoOscuro,
+                    onCheckedChange = onModoOscuroChange
+                )
+            }
+
+            Spacer(Modifier.height(6.dp))
+
+            Text(
+                text = "General",
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            AjustePendiente("Idioma")
+
+            AjustePendiente("Notificaciones y Alertas")
+
+            AjustePendiente("Privacidad")
+
+            AjustePendiente("Borrar Historial")
+
+            HorizontalDivider()
+
+            Text(
+                text = "Primer avance: estructura de la pantalla. " +
+                        "El modo oscuro está habilitado. " +
+                        "Las demás opciones se implementarán " +
+                        "en siguientes entregas.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -70,16 +123,21 @@ fun AjustesScreen(modifier: Modifier = Modifier) {
 
 @Composable
 private fun AjustePendiente(titulo: String) {
+
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 5.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+
         Text(
             text = titulo,
             modifier = Modifier.weight(1f),
-            fontSize = 17.sp,
+            fontSize = 17.sp
         )
+
         Text(
             text = "Próximamente",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -91,5 +149,11 @@ private fun AjustePendiente(titulo: String) {
 @Preview(showBackground = true)
 @Composable
 private fun AjustesPreview() {
-    MICINETheme { AjustesScreen() }
+
+    MICINETheme {
+        AjustesScreen(
+            modoOscuro = false,
+            onModoOscuroChange = {}
+        )
+    }
 }
