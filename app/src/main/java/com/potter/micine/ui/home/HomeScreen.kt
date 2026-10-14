@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 
 data class PeliculaListado(
     val titulo: String,
@@ -121,5 +122,17 @@ fun HomeScreenPreview() {
             PeliculaListado("Intensamente", "Animación", "Vista", 4),
             PeliculaListado("Interestelar", "Ciencia ficción", "Pendiente", 0)
         )
+    )
+}
+
+
+@Composable
+fun HomeScreenConViewModel(
+    viewModel: HomeViewModel
+) {
+    val peliculas by viewModel.peliculas.collectAsState()
+
+    HomeScreen(
+        peliculas = peliculas
     )
 }
