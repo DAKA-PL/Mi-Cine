@@ -1,6 +1,7 @@
 
 package com.potter.micine.ui.settings
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -23,15 +24,20 @@ fun AjustesScreen(
     modifier: Modifier = Modifier
 ) {
 
-    // Permite identificar el idioma seleccionado
+    // Identificar el idioma seleccionado
     val esIngles = idioma == "English"
 
     fun traducir(espanol: String, ingles: String): String {
         return if (esIngles) ingles else espanol
     }
 
-    // Controla el menú desplegable de idiomas
+    // Control del menú de idiomas
     var mostrarIdiomas by remember {
+        mutableStateOf(false)
+    }
+
+    // Control de la ventana de privacidad
+    var mostrarPrivacidad by remember {
         mutableStateOf(false)
     }
 
@@ -49,12 +55,14 @@ fun AjustesScreen(
             verticalArrangement = Arrangement.spacedBy(18.dp)
         ) {
 
+            // Título de la aplicación
             Text(
                 text = "Mi Cine",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
 
+            // Encabezado Mi Perfil
             Text(
                 text = traducir(
                     "♙  Mi Perfil",
@@ -66,12 +74,16 @@ fun AjustesScreen(
 
             HorizontalDivider()
 
+            // SECCIÓN PREFERENCIAS
             Text(
-                text = traducir("Preferencias", "Preferences"),
+                text = traducir(
+                    "Preferencias",
+                    "Preferences"
+                ),
                 style = MaterialTheme.typography.titleLarge
             )
 
-            // Segundo avance: modo oscuro
+            // MODO OSCURO
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -81,7 +93,10 @@ fun AjustesScreen(
             ) {
 
                 Text(
-                    text = traducir("Modo Oscuro", "Dark Mode"),
+                    text = traducir(
+                        "Modo Oscuro",
+                        "Dark Mode"
+                    ),
                     fontSize = 17.sp
                 )
 
@@ -91,14 +106,15 @@ fun AjustesScreen(
                 )
             }
 
-            Spacer(Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
+            // SECCIÓN GENERAL
             Text(
-                text = traducir("General", "General"),
+                text = "General",
                 style = MaterialTheme.typography.titleLarge
             )
 
-            // Tercer avance: selector de idiomas
+            // SELECTOR DE IDIOMAS
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -106,14 +122,19 @@ fun AjustesScreen(
             ) {
 
                 Text(
-                    text = traducir("Idioma", "Language"),
+                    text = traducir(
+                        "Idioma",
+                        "Language"
+                    ),
                     fontSize = 17.sp
                 )
 
                 Box {
 
                     OutlinedButton(
-                        onClick = { mostrarIdiomas = true }
+                        onClick = {
+                            mostrarIdiomas = true
+                        }
                     ) {
                         Text(idioma)
                         Text(" ▾")
@@ -127,7 +148,9 @@ fun AjustesScreen(
                     ) {
 
                         DropdownMenuItem(
-                            text = { Text("Español") },
+                            text = {
+                                Text("Español")
+                            },
                             onClick = {
                                 onIdiomaChange("Español")
                                 mostrarIdiomas = false
@@ -135,7 +158,9 @@ fun AjustesScreen(
                         )
 
                         DropdownMenuItem(
-                            text = { Text("English") },
+                            text = {
+                                Text("English")
+                            },
                             onClick = {
                                 onIdiomaChange("English")
                                 mostrarIdiomas = false
@@ -145,26 +170,59 @@ fun AjustesScreen(
                 }
             }
 
+            // NOTIFICACIONES
             AjustePendiente(
-                traducir(
+                titulo = traducir(
                     "Notificaciones y Alertas",
                     "Notifications and Alerts"
                 ),
-                traducir("Próximamente", "Coming Soon")
+                mensaje = traducir(
+                    "Próximamente",
+                    "Coming Soon"
+                )
             )
 
-            AjustePendiente(
-                traducir("Privacidad", "Privacy"),
-                traducir("Próximamente", "Coming Soon")
-            )
+            // PRIVACIDAD - NUEVA OPCIÓN
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        mostrarPrivacidad = true
+                    }
+                    .padding(vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
 
+                Text(
+                    text = traducir(
+                        "Privacidad",
+                        "Privacy"
+                    ),
+                    fontSize = 17.sp
+                )
+
+                Text(
+                    text = "›",
+                    fontSize = 24.sp
+                )
+            }
+
+            // BORRAR HISTORIAL
             AjustePendiente(
-                traducir("Borrar Historial", "Clear History"),
-                traducir("Próximamente", "Coming Soon")
+                titulo = traducir(
+                    "Borrar Historial",
+                    "Clear History"
+                ),
+                mensaje = traducir(
+                    "Próximamente",
+                    "Coming Soon"
+                )
             )
 
             HorizontalDivider()
 
+            // MENSAJE INFORMATIVO
             Text(
                 text = traducir(
                     "Modo oscuro y selector de idiomas disponibles. Las demás funciones se implementarán posteriormente.",
@@ -175,8 +233,49 @@ fun AjustesScreen(
             )
         }
     }
+
+    // VENTANA DE PRIVACIDAD
+    if (mostrarPrivacidad) {
+
+        AlertDialog(
+            onDismissRequest = {
+                mostrarPrivacidad = false
+            },
+            title = {
+                Text(
+                    traducir(
+                        "Privacidad",
+                        "Privacy"
+                    )
+                )
+            },
+            text = {
+                Text(
+                    traducir(
+                        "Las opciones de privacidad estarán disponibles próximamente.",
+                        "Privacy options will be available soon."
+                    )
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        mostrarPrivacidad = false
+                    }
+                ) {
+                    Text(
+                        traducir(
+                            "Cerrar",
+                            "Close"
+                        )
+                    )
+                }
+            }
+        )
+    }
 }
 
+// COMPONENTE PARA FUNCIONES PENDIENTES
 @Composable
 private fun AjustePendiente(
     titulo: String,
@@ -205,6 +304,7 @@ private fun AjustePendiente(
     }
 }
 
+// VISTA PREVIA
 @Preview(showBackground = true)
 @Composable
 private fun AjustesPreview() {
