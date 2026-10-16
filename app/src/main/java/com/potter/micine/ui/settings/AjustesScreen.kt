@@ -21,6 +21,8 @@ fun AjustesScreen(
     onModoOscuroChange: (Boolean) -> Unit,
     idioma: String,
     onIdiomaChange: (String) -> Unit,
+    notificaciones: Boolean,
+    onNotificacionesChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -55,14 +57,14 @@ fun AjustesScreen(
             verticalArrangement = Arrangement.spacedBy(18.dp)
         ) {
 
-            // Título de la aplicación
+            // TÍTULO DE LA APLICACIÓN
             Text(
                 text = "Mi Cine",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
 
-            // Encabezado Mi Perfil
+            // MI PERFIL
             Text(
                 text = traducir(
                     "♙  Mi Perfil",
@@ -83,7 +85,7 @@ fun AjustesScreen(
                 style = MaterialTheme.typography.titleLarge
             )
 
-            // MODO OSCURO
+            // SEGUNDO AVANCE: MODO OSCURO
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -91,7 +93,6 @@ fun AjustesScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-
                 Text(
                     text = traducir(
                         "Modo Oscuro",
@@ -114,13 +115,12 @@ fun AjustesScreen(
                 style = MaterialTheme.typography.titleLarge
             )
 
-            // SELECTOR DE IDIOMAS
+            // TERCER AVANCE: SELECTOR DE IDIOMAS
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-
                 Text(
                     text = traducir(
                         "Idioma",
@@ -130,7 +130,6 @@ fun AjustesScreen(
                 )
 
                 Box {
-
                     OutlinedButton(
                         onClick = {
                             mostrarIdiomas = true
@@ -146,11 +145,8 @@ fun AjustesScreen(
                             mostrarIdiomas = false
                         }
                     ) {
-
                         DropdownMenuItem(
-                            text = {
-                                Text("Español")
-                            },
+                            text = { Text("Español") },
                             onClick = {
                                 onIdiomaChange("Español")
                                 mostrarIdiomas = false
@@ -158,9 +154,7 @@ fun AjustesScreen(
                         )
 
                         DropdownMenuItem(
-                            text = {
-                                Text("English")
-                            },
+                            text = { Text("English") },
                             onClick = {
                                 onIdiomaChange("English")
                                 mostrarIdiomas = false
@@ -170,19 +164,40 @@ fun AjustesScreen(
                 }
             }
 
-            // NOTIFICACIONES
-            AjustePendiente(
-                titulo = traducir(
-                    "Notificaciones y Alertas",
-                    "Notifications and Alerts"
-                ),
-                mensaje = traducir(
-                    "Próximamente",
-                    "Coming Soon"
+            // SEXTO AVANCE: NOTIFICACIONES Y ALERTAS
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 5.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = traducir(
+                        "Notificaciones y Alertas",
+                        "Notifications and Alerts"
+                    ),
+                    modifier = Modifier.weight(1f),
+                    fontSize = 17.sp
                 )
+
+                Switch(
+                    checked = notificaciones,
+                    onCheckedChange = onNotificacionesChange
+                )
+            }
+
+            // Mensaje sobre las notificaciones
+            Text(
+                text = traducir(
+                    "Preferencia guardada. Los avisos automáticos estarán disponibles próximamente.",
+                    "Preference saved. Automatic notifications will be available soon."
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            // PRIVACIDAD - NUEVA OPCIÓN
+            // QUINTO AVANCE: PRIVACIDAD
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -193,7 +208,6 @@ fun AjustesScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-
                 Text(
                     text = traducir(
                         "Privacidad",
@@ -208,7 +222,7 @@ fun AjustesScreen(
                 )
             }
 
-            // BORRAR HISTORIAL
+            // BORRAR HISTORIAL: PENDIENTE
             AjustePendiente(
                 titulo = traducir(
                     "Borrar Historial",
@@ -225,8 +239,8 @@ fun AjustesScreen(
             // MENSAJE INFORMATIVO
             Text(
                 text = traducir(
-                    "Modo oscuro y selector de idiomas disponibles. Las demás funciones se implementarán posteriormente.",
-                    "Dark mode and language selector are available. Other features will be implemented later."
+                    "Modo oscuro, idiomas y preferencia de notificaciones disponibles. Las demás funciones se implementarán posteriormente.",
+                    "Dark mode, languages and notification preferences are available. Other features will be implemented later."
                 ),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -236,7 +250,6 @@ fun AjustesScreen(
 
     // VENTANA DE PRIVACIDAD
     if (mostrarPrivacidad) {
-
         AlertDialog(
             onDismissRequest = {
                 mostrarPrivacidad = false
@@ -252,8 +265,15 @@ fun AjustesScreen(
             text = {
                 Text(
                     traducir(
-                        "Las opciones de privacidad estarán disponibles próximamente.",
-                        "Privacy options will be available soon."
+                        "Mi Cine permite organizar películas vistas y pendientes. " +
+                                "La información se almacenará localmente mediante Room " +
+                                "cuando se integre la base de datos. " +
+                                "Actualmente no se realiza sincronización en la nube.",
+
+                        "Mi Cine allows you to organize watched and pending movies. " +
+                                "The information will be stored locally using Room " +
+                                "when the database is integrated. " +
+                                "Cloud synchronization is not currently available."
                     )
                 )
             },
@@ -281,7 +301,6 @@ private fun AjustePendiente(
     titulo: String,
     mensaje: String
 ) {
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -289,7 +308,6 @@ private fun AjustePendiente(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-
         Text(
             text = titulo,
             modifier = Modifier.weight(1f),
@@ -308,13 +326,14 @@ private fun AjustePendiente(
 @Preview(showBackground = true)
 @Composable
 private fun AjustesPreview() {
-
     MICINETheme {
         AjustesScreen(
             modoOscuro = false,
             onModoOscuroChange = {},
             idioma = "Español",
-            onIdiomaChange = {}
+            onIdiomaChange = {},
+            notificaciones = false,
+            onNotificacionesChange = {}
         )
     }
 }
