@@ -1,47 +1,50 @@
+
 package com.potter.micine
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.activity.viewModels
+import androidx.room.Room
+import com.potter.micine.data.local.MiCineDatabase
+import com.potter.micine.ui.home.HomeScreenConViewModel
+import com.potter.micine.ui.home.HomeViewModel
 import com.potter.micine.ui.theme.MICINETheme
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 
 class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            MICINETheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+
+    private val database by lazy {
+        Room.databaseBuilder(
+            applicationContext,
+            MiCineDatabase::class.java,
+            "mi_cine_database"
+        ).build()
+    }
+
+    private val homeViewModel: HomeViewModel by viewModels {
+        object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(
+                modelClass: Class<T>
+            ): T {
+                return HomeViewModel(
+                    database.peliculaDao()
+                ) as T
             }
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MICINETheme {
-        Greeting("Android")
+        setContent {
+            MICINETheme {
+                HomeScreenConViewModel(
+                    viewModel = homeViewModel
+                )
+            }
+        }
     }
 }
