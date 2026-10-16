@@ -1,4 +1,7 @@
 package com.potter.micine
 
-class MiCineApplication {
-}
+import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
+
+@HiltAndroidApp
+class MiCineApplication : Application()
