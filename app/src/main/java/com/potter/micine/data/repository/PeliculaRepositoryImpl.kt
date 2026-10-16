@@ -5,8 +5,9 @@ import com.potter.micine.data.local.PeliculaEntity
 import com.potter.micine.data.model.Pelicula
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class PeliculaRepositoryImpl(
+class PeliculaRepositoryImpl @Inject constructor(
     private val peliculaDao: PeliculaDao
 ) : PeliculaRepository {
 
