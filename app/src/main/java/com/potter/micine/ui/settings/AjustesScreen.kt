@@ -43,6 +43,11 @@ fun AjustesScreen(
         mutableStateOf(false)
     }
 
+    // Séptimo avance: ventana Borrar Historial
+    var mostrarBorrarHistorial by remember {
+        mutableStateOf(false)
+    }
+
     Scaffold(modifier = modifier) { innerPadding ->
 
         Column(
@@ -85,7 +90,7 @@ fun AjustesScreen(
                 style = MaterialTheme.typography.titleLarge
             )
 
-            // SEGUNDO AVANCE: MODO OSCURO
+            // MODO OSCURO
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -115,7 +120,7 @@ fun AjustesScreen(
                 style = MaterialTheme.typography.titleLarge
             )
 
-            // TERCER AVANCE: SELECTOR DE IDIOMAS
+            // SELECTOR DE IDIOMAS
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -164,7 +169,7 @@ fun AjustesScreen(
                 }
             }
 
-            // SEXTO AVANCE: NOTIFICACIONES Y ALERTAS
+            // NOTIFICACIONES Y ALERTAS
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -187,7 +192,6 @@ fun AjustesScreen(
                 )
             }
 
-            // Mensaje sobre las notificaciones
             Text(
                 text = traducir(
                     "Preferencia guardada. Los avisos automáticos estarán disponibles próximamente.",
@@ -197,7 +201,7 @@ fun AjustesScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            // QUINTO AVANCE: PRIVACIDAD
+            // PRIVACIDAD
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -222,25 +226,38 @@ fun AjustesScreen(
                 )
             }
 
-            // BORRAR HISTORIAL: PENDIENTE
-            AjustePendiente(
-                titulo = traducir(
-                    "Borrar Historial",
-                    "Clear History"
-                ),
-                mensaje = traducir(
-                    "Próximamente",
-                    "Coming Soon"
+            // SÉPTIMO AVANCE: BORRAR HISTORIAL
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        mostrarBorrarHistorial = true
+                    }
+                    .padding(vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = traducir(
+                        "Borrar Historial",
+                        "Clear History"
+                    ),
+                    fontSize = 17.sp
                 )
-            )
+
+                Text(
+                    text = "›",
+                    fontSize = 24.sp
+                )
+            }
 
             HorizontalDivider()
 
             // MENSAJE INFORMATIVO
             Text(
                 text = traducir(
-                    "Modo oscuro, idiomas y preferencia de notificaciones disponibles. Las demás funciones se implementarán posteriormente.",
-                    "Dark mode, languages and notification preferences are available. Other features will be implemented later."
+                    "Modo oscuro, idiomas y notificaciones disponibles. La eliminación del historial requiere integrar Room.",
+                    "Dark mode, languages and notification preferences are available. Clearing history requires Room integration."
                 ),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -293,31 +310,64 @@ fun AjustesScreen(
             }
         )
     }
-}
 
-// COMPONENTE PARA FUNCIONES PENDIENTES
-@Composable
-private fun AjustePendiente(
-    titulo: String,
-    mensaje: String
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 5.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = titulo,
-            modifier = Modifier.weight(1f),
-            fontSize = 17.sp
-        )
+    // VENTANA DE BORRAR HISTORIAL
+    if (mostrarBorrarHistorial) {
+        AlertDialog(
+            onDismissRequest = {
+                mostrarBorrarHistorial = false
+            },
+            title = {
+                Text(
+                    traducir(
+                        "Borrar Historial",
+                        "Clear History"
+                    )
+                )
+            },
+            text = {
+                Text(
+                    traducir(
+                        "¿Deseas borrar el historial de películas? " +
+                                "Esta función todavía no elimina datos. " +
+                                "Estará disponible cuando se integre " +
+                                "la base de datos Room.",
 
-        Text(
-            text = mensaje,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = MaterialTheme.typography.labelSmall
+                        "Do you want to clear your movie history? " +
+                                "This feature does not delete data yet. " +
+                                "It will be available when the Room " +
+                                "database is integrated."
+                    )
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        mostrarBorrarHistorial = false
+                    }
+                ) {
+                    Text(
+                        traducir(
+                            "Entendido",
+                            "Understood"
+                        )
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        mostrarBorrarHistorial = false
+                    }
+                ) {
+                    Text(
+                        traducir(
+                            "Cancelar",
+                            "Cancel"
+                        )
+                    )
+                }
+            }
         )
     }
 }
