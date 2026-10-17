@@ -2,7 +2,7 @@ package com.potter.micine.ui.form
 
 data class FormPeliculaUIState(
     val titulo: String = "",
-    val generoId: Long = 1L,
+    val generoId: Long = 0L,
     val generosDisponibles: List<String> = listOf(
         "Acción",
         "Animada",

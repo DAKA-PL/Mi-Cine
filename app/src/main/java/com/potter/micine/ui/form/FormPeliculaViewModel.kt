@@ -1,12 +1,22 @@
+
 package com.potter.micine.ui.form
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.potter.micine.data.model.Pelicula
+import com.potter.micine.data.repository.PeliculaRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class FormPeliculaViewModel : ViewModel() {
+@HiltViewModel
+class FormPeliculaViewModel @Inject constructor(
+    private val peliculaRepository: PeliculaRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FormPeliculaUIState())
 
@@ -25,7 +35,6 @@ class FormPeliculaViewModel : ViewModel() {
         }
     }
 
-
     fun actualizarEstado(vista: Boolean) {
         _uiState.update { estado ->
             estado.copy(
@@ -39,9 +48,6 @@ class FormPeliculaViewModel : ViewModel() {
             )
         }
     }
-
-
-
 
     fun actualizarCalificacion(valor: Int) {
         _uiState.update { estado ->
@@ -59,8 +65,6 @@ class FormPeliculaViewModel : ViewModel() {
             )
         }
     }
-
-
 
     fun actualizarNuevoGenero(valor: String) {
         _uiState.update {
@@ -115,7 +119,6 @@ class FormPeliculaViewModel : ViewModel() {
         }
     }
 
-
     fun validarFormulario(): Boolean {
         val estado = _uiState.value
 
@@ -138,5 +141,65 @@ class FormPeliculaViewModel : ViewModel() {
         }
 
         return mensaje == null
+    }
+
+    fun guardarPelicula(onGuardado: () -> Unit) {
+        if (_uiState.value.guardando) return
+        if (!validarFormulario()) return
+
+        val estado = _uiState.value
+
+        val generoSeleccionado =
+            estado.generosDisponibles.getOrNull(
+                (estado.generoId - 1L).toInt()
+            )
+
+        if (generoSeleccionado == null) {
+            _uiState.update {
+                it.copy(error = "Debes seleccionar un género.")
+            }
+            return
+        }
+
+        val pelicula = Pelicula(
+            titulo = estado.titulo.trim(),
+            genero = generoSeleccionado,
+            vista = estado.esVista,
+            calificacion = if (estado.esVista) {
+                estado.calificacion
+            } else {
+                null
+            }
+        )
+
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    guardando = true,
+                    estaGuardado = false,
+                    error = null
+                )
+            }
+
+            try {
+                peliculaRepository.insertar(pelicula)
+
+                _uiState.update {
+                    it.copy(estaGuardado = true)
+                }
+
+                onGuardado()
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        error = "No se pudo guardar la película."
+                    )
+                }
+            } finally {
+                _uiState.update {
+                    it.copy(guardando = false)
+                }
+            }
+        }
     }
 }

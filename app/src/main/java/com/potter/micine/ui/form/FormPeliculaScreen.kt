@@ -34,13 +34,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+
+
 
 @Composable
 fun FormPeliculaRoute(
-    onGuardar: (FormPeliculaUIState) -> Unit,
+    onGuardado: () -> Unit,
     onCancelar: () -> Unit,
-    formViewModel: FormPeliculaViewModel = viewModel()
+    formViewModel: FormPeliculaViewModel = hiltViewModel()
 ) {
     val uiState by formViewModel.uiState.collectAsStateWithLifecycle()
 
@@ -54,13 +56,15 @@ fun FormPeliculaRoute(
         onMostrarDialogoGenero = formViewModel::mostrarDialogoGenero,
         onAgregarGenero = formViewModel::agregarGenero,
         onGuardar = {
-            if (formViewModel.validarFormulario()) {
-                onGuardar(formViewModel.uiState.value)
-            }
+            formViewModel.guardarPelicula(
+                onGuardado = onGuardado
+            )
         },
         onCancelar = onCancelar
     )
 }
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
