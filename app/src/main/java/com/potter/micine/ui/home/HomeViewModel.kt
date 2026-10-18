@@ -9,11 +9,13 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    peliculaDao: PeliculaDao
+    private val peliculaDao: PeliculaDao
 ) : ViewModel() {
 
     val peliculas: StateFlow<List<PeliculaListado>> =
@@ -24,7 +26,8 @@ class HomeViewModel @Inject constructor(
                         titulo = pelicula.titulo,
                         genero = pelicula.genero,
                         estado = if (pelicula.vista) "Vista" else "Pendiente",
-                        calificacion = pelicula.calificacion ?: 0
+                        calificacion = pelicula.calificacion ?: 0,
+                        id = pelicula.id
                     )
                 }
             }
@@ -33,4 +36,16 @@ class HomeViewModel @Inject constructor(
                 started = SharingStarted.WhileSubscribed(5000),
                 initialValue = emptyList()
             )
+
+    fun eliminarPelicula(id: Int) {
+        if (id <= 0) return
+
+        viewModelScope.launch {
+            val pelicula = peliculaDao.obtenerPorId(id).first()
+
+            if (pelicula != null) {
+                peliculaDao.eliminar(pelicula)
+            }
+        }
+    }
 }
