@@ -18,4 +18,6 @@ interface PeliculaRepository {
     suspend fun actualizar(pelicula: Pelicula): Int
 
     suspend fun eliminar(pelicula: Pelicula): Int
+
+    suspend fun borrarHistorial(): Int
 }
