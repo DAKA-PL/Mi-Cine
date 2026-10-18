@@ -1,57 +1,91 @@
+
 package com.potter.micine.ui.theme
 
-import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+// TEMA ROJO CLARO
+private val LightColorScheme = lightColorScheme(
+    primary = RojoPrimarioClaro,
+    onPrimary = SobreRojoClaro,
+    primaryContainer = RojoContenedorClaro,
+    onPrimaryContainer = SobreContenedorClaro,
+
+    secondary = RojoSecundarioClaro,
+    onSecondary = Color.White,
+    secondaryContainer = Color(0xFFFFDBD6),
+    onSecondaryContainer = Color(0xFF3D211F),
+
+    tertiary = Color(0xFF9F3B48),
+    onTertiary = Color.White,
+
+    background = FondoAppClaro,
+    onBackground = TextoAppClaro,
+
+    surface = FondoAppClaro,
+    onSurface = TextoAppClaro,
+
+    surfaceVariant = TarjetaAppClara,
+    onSurfaceVariant = TextoSecundarioClaro,
+
+    surfaceContainerLow = Color(0xFFFFF2F0),
+    surfaceContainer = BarraAppClara,
+    surfaceContainerHigh = TarjetaAppClara,
+    surfaceContainerHighest = Color(0xFFF3D7D4),
+
+    outline = BordeAppClaro
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+// TEMA ROJO OSCURO
+private val DarkColorScheme = darkColorScheme(
+    primary = RojoPrimarioOscuro,
+    onPrimary = SobreRojoOscuro,
+    primaryContainer = RojoContenedorOscuro,
+    onPrimaryContainer = SobreContenedorOscuro,
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    secondary = RojoSecundarioOscuro,
+    onSecondary = Color(0xFF432825),
+    secondaryContainer = Color(0xFF5A3834),
+    onSecondaryContainer = Color(0xFFFFDAD4),
+
+    tertiary = Color(0xFFFFB2BE),
+    onTertiary = Color(0xFF5E192A),
+
+    background = FondoAppOscuro,
+    onBackground = TextoAppOscuro,
+
+    surface = FondoAppOscuro,
+    onSurface = TextoAppOscuro,
+
+    surfaceVariant = TarjetaAppOscura,
+    onSurfaceVariant = TextoSecundarioOscuro,
+
+    surfaceContainerLow = Color(0xFF211719),
+    surfaceContainer = BarraAppOscura,
+    surfaceContainerHigh = TarjetaAppOscura,
+    surfaceContainerHighest = Color(0xFF3E2C2F),
+
+    outline = BordeAppOscuro
 )
 
 @Composable
 fun MICINETheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    val colores = if (darkTheme) {
+        DarkColorScheme
+    } else {
+        LightColorScheme
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = colores,
         typography = Typography,
         content = content
     )

@@ -23,6 +23,7 @@ fun AjustesScreen(
     onIdiomaChange: (String) -> Unit,
     notificaciones: Boolean,
     onNotificacionesChange: (Boolean) -> Unit,
+    onBorrarHistorial: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
 
@@ -38,12 +39,7 @@ fun AjustesScreen(
         mutableStateOf(false)
     }
 
-    // Control de la ventana de privacidad
-    var mostrarPrivacidad by remember {
-        mutableStateOf(false)
-    }
-
-    // Séptimo avance: ventana Borrar Historial
+    // Control de la ventana Borrar Historial
     var mostrarBorrarHistorial by remember {
         mutableStateOf(false)
     }
@@ -98,6 +94,7 @@ fun AjustesScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
+
                 Text(
                     text = traducir(
                         "Modo Oscuro",
@@ -126,6 +123,7 @@ fun AjustesScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
+
                 Text(
                     text = traducir(
                         "Idioma",
@@ -135,6 +133,7 @@ fun AjustesScreen(
                 )
 
                 Box {
+
                     OutlinedButton(
                         onClick = {
                             mostrarIdiomas = true
@@ -150,6 +149,7 @@ fun AjustesScreen(
                             mostrarIdiomas = false
                         }
                     ) {
+
                         DropdownMenuItem(
                             text = { Text("Español") },
                             onClick = {
@@ -177,6 +177,7 @@ fun AjustesScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
+
                 Text(
                     text = traducir(
                         "Notificaciones y Alertas",
@@ -192,41 +193,7 @@ fun AjustesScreen(
                 )
             }
 
-            Text(
-                text = traducir(
-                    "Preferencia guardada. Los avisos automáticos estarán disponibles próximamente.",
-                    "Preference saved. Automatic notifications will be available soon."
-                ),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            // PRIVACIDAD
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        mostrarPrivacidad = true
-                    }
-                    .padding(vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = traducir(
-                        "Privacidad",
-                        "Privacy"
-                    ),
-                    fontSize = 17.sp
-                )
-
-                Text(
-                    text = "›",
-                    fontSize = 24.sp
-                )
-            }
-
-            // SÉPTIMO AVANCE: BORRAR HISTORIAL
+            // SECCIÓN BORRAR HISTORIAL
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -237,6 +204,7 @@ fun AjustesScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
+
                 Text(
                     text = traducir(
                         "Borrar Historial",
@@ -250,73 +218,17 @@ fun AjustesScreen(
                     fontSize = 24.sp
                 )
             }
-
-            HorizontalDivider()
-
-            // MENSAJE INFORMATIVO
-            Text(
-                text = traducir(
-                    "Modo oscuro, idiomas y notificaciones disponibles. La eliminación del historial requiere integrar Room.",
-                    "Dark mode, languages and notification preferences are available. Clearing history requires Room integration."
-                ),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
         }
     }
 
-    // VENTANA DE PRIVACIDAD
-    if (mostrarPrivacidad) {
-        AlertDialog(
-            onDismissRequest = {
-                mostrarPrivacidad = false
-            },
-            title = {
-                Text(
-                    traducir(
-                        "Privacidad",
-                        "Privacy"
-                    )
-                )
-            },
-            text = {
-                Text(
-                    traducir(
-                        "Mi Cine permite organizar películas vistas y pendientes. " +
-                                "La información se almacenará localmente mediante Room " +
-                                "cuando se integre la base de datos. " +
-                                "Actualmente no se realiza sincronización en la nube.",
-
-                        "Mi Cine allows you to organize watched and pending movies. " +
-                                "The information will be stored locally using Room " +
-                                "when the database is integrated. " +
-                                "Cloud synchronization is not currently available."
-                    )
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        mostrarPrivacidad = false
-                    }
-                ) {
-                    Text(
-                        traducir(
-                            "Cerrar",
-                            "Close"
-                        )
-                    )
-                }
-            }
-        )
-    }
-
-    // VENTANA DE BORRAR HISTORIAL
+    // VENTANA DE CONFIRMACIÓN PARA BORRAR HISTORIAL
     if (mostrarBorrarHistorial) {
+
         AlertDialog(
             onDismissRequest = {
                 mostrarBorrarHistorial = false
             },
+
             title = {
                 Text(
                     traducir(
@@ -325,35 +237,41 @@ fun AjustesScreen(
                     )
                 )
             },
+
             text = {
                 Text(
                     traducir(
-                        "¿Deseas borrar el historial de películas? " +
-                                "Esta función todavía no elimina datos. " +
-                                "Estará disponible cuando se integre " +
-                                "la base de datos Room.",
+                        "¿Estás seguro de que deseas eliminar todo el historial de películas? " +
+                                "Esta acción no se puede deshacer.",
 
-                        "Do you want to clear your movie history? " +
-                                "This feature does not delete data yet. " +
-                                "It will be available when the Room " +
-                                "database is integrated."
+                        "Are you sure you want to delete all movie history? " +
+                                "This action cannot be undone."
                     )
                 )
             },
+
+            // BOTÓN ELIMINAR
             confirmButton = {
                 TextButton(
                     onClick = {
+
+                        // Preparado para conectar con Room
+                        onBorrarHistorial()
+
+                        // Cerrar ventana
                         mostrarBorrarHistorial = false
                     }
                 ) {
                     Text(
                         traducir(
-                            "Entendido",
-                            "Understood"
+                            "Eliminar",
+                            "Delete"
                         )
                     )
                 }
             },
+
+            // BOTÓN CANCELAR
             dismissButton = {
                 TextButton(
                     onClick = {
@@ -376,14 +294,17 @@ fun AjustesScreen(
 @Preview(showBackground = true)
 @Composable
 private fun AjustesPreview() {
+
     MICINETheme {
+
         AjustesScreen(
             modoOscuro = false,
             onModoOscuroChange = {},
             idioma = "Español",
             onIdiomaChange = {},
             notificaciones = false,
-            onNotificacionesChange = {}
+            onNotificacionesChange = {},
+            onBorrarHistorial = {}
         )
     }
 }
