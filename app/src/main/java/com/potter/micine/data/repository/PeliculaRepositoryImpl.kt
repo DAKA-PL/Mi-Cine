@@ -61,6 +61,10 @@ class PeliculaRepositoryImpl @Inject constructor(
         return peliculaDao.eliminar(pelicula.toEntity())
     }
 
+    override suspend fun borrarHistorial(): Int {
+        return peliculaDao.borrarHistorial()
+    }
+
     private fun validarPelicula(pelicula: Pelicula) {
         require(pelicula.titulo.isNotBlank()) {
             "El título no puede estar vacío"

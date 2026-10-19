@@ -38,4 +38,8 @@ interface PeliculaDao {
     // Eliminar una película
     @Delete
     suspend fun eliminar(pelicula: PeliculaEntity): Int
+
+    // Eliminar todas las películas del historial
+    @Query("DELETE FROM peliculas")
+    suspend fun borrarHistorial(): Int
 }
