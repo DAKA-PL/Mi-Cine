@@ -1,4 +1,3 @@
-
 package com.potter.micine
 
 import android.Manifest
@@ -21,6 +20,7 @@ import com.potter.micine.ui.settings.AjustesScreen
 import com.potter.micine.ui.settings.AjustesViewModel
 import com.potter.micine.ui.theme.MICINETheme
 import dagger.hilt.android.AndroidEntryPoint
+import android.annotation.SuppressLint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -136,9 +136,8 @@ class MainActivity : ComponentActivity() {
                             },
 
                             // BORRAR HISTORIAL
-                            // Pendiente de integrar con Room
                             onBorrarHistorial = {
-                                // Se conectará posteriormente
+                                ajustesViewModel.borrarHistorial()
                             }
                         )
                     }
@@ -190,6 +189,7 @@ class MainActivity : ComponentActivity() {
     }
 
     // MOSTRAR NOTIFICACIÓN DE PRUEBA
+    @SuppressLint("MissingPermission")
     @Suppress("DEPRECATION")
     private fun mostrarNotificacion() {
 

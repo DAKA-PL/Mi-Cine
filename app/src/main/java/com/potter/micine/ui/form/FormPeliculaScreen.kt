@@ -35,16 +35,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.hilt.navigation.compose.hiltViewModel
-
+import androidx.compose.runtime.LaunchedEffect
 
 
 @Composable
 fun FormPeliculaRoute(
     onGuardado: () -> Unit,
     onCancelar: () -> Unit,
+    peliculaId: Int? = null,
     formViewModel: FormPeliculaViewModel = hiltViewModel()
 ) {
-    val uiState by formViewModel.uiState.collectAsStateWithLifecycle()
+
+    // Cargar la película cuando estemos editando
+    LaunchedEffect(peliculaId) {
+        if (peliculaId != null) {
+            formViewModel.cargarPeliculaParaEditar(peliculaId)
+        }
+    }
+
+    val uiState by formViewModel.uiState
+        .collectAsStateWithLifecycle()
 
     FormPeliculaContent(
         uiState = uiState,
@@ -63,6 +73,7 @@ fun FormPeliculaRoute(
         onCancelar = onCancelar
     )
 }
+
 
 
 

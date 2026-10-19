@@ -1,4 +1,3 @@
-
 package com.potter.micine.navigation
 
 import androidx.compose.foundation.layout.padding
@@ -12,12 +11,23 @@ import androidx.navigation.compose.*
 import com.potter.micine.ui.home.HomeScreen
 import com.potter.micine.ui.home.HomeViewModel
 import com.potter.micine.ui.form.FormPeliculaRoute
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.potter.micine.ui.home.PeliculaListado
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 
 // RUTAS DE LA APLICACIÓN
 object Rutas {
     const val INICIO = "inicio"
     const val AGREGAR = "agregar"
+    const val EDITAR = "editar/{peliculaId}"
     const val AJUSTES = "ajustes"
+
+    fun editarPelicula(id: Int): String {
+        return "editar/$id"
+    }
 }
 
 @Composable
@@ -98,6 +108,7 @@ fun MiCineNavGraph(
             modifier = Modifier.padding(paddingInterno)
         ) {
 
+
             // INICIO
             composable(Rutas.INICIO) {
 
@@ -106,9 +117,69 @@ fun MiCineNavGraph(
                 val peliculas by viewModel.peliculas
                     .collectAsStateWithLifecycle()
 
+                // Película seleccionada para eliminar
+                var peliculaAEliminar by remember {
+                    mutableStateOf<PeliculaListado?>(null)
+                }
+
                 HomeScreen(
-                    peliculas = peliculas
+                    peliculas = peliculas,
+
+                    onEditar = { pelicula ->
+                        navController.navigate(
+                            Rutas.editarPelicula(pelicula.id)
+                        )
+                    },
+
+                    onEliminar = { pelicula ->
+                        peliculaAEliminar = pelicula
+                    }
                 )
+
+                // Ventana de confirmación
+                peliculaAEliminar?.let { pelicula ->
+
+                    AlertDialog(
+                        onDismissRequest = {
+                            peliculaAEliminar = null
+                        },
+
+                        title = {
+                            Text("Eliminar película")
+                        },
+
+                        text = {
+                            Text(
+                                "¿Estás seguro de que deseas eliminar " +
+                                        "\"${pelicula.titulo}\"?"
+                            )
+                        },
+
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    viewModel.eliminarPelicula(pelicula.id)
+                                    peliculaAEliminar = null
+                                }
+                            ) {
+                                Text(
+                                    "Eliminar",
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        },
+
+                        dismissButton = {
+                            TextButton(
+                                onClick = {
+                                    peliculaAEliminar = null
+                                }
+                            ) {
+                                Text("Cancelar")
+                            }
+                        }
+                    )
+                }
             }
 
             // AGREGAR
@@ -127,6 +198,33 @@ fun MiCineNavGraph(
                             Rutas.INICIO,
                             false
                         )
+                    }
+                )
+            }
+
+
+            // EDITAR PELÍCULA
+            composable(
+                route = Rutas.EDITAR,
+                arguments = listOf(
+                    navArgument("peliculaId") {
+                        type = NavType.IntType
+                    }
+                )
+            ) { entrada ->
+
+                val peliculaId = entrada.arguments
+                    ?.getInt("peliculaId") ?: -1
+
+                FormPeliculaRoute(
+                    peliculaId = peliculaId,
+
+                    onGuardado = {
+                        navController.popBackStack()
+                    },
+
+                    onCancelar = {
+                        navController.popBackStack()
                     }
                 )
             }

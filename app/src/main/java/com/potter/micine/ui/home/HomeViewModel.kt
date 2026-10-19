@@ -1,31 +1,37 @@
 
 package com.potter.micine.ui.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.potter.micine.data.local.PeliculaDao
+import com.potter.micine.data.repository.PeliculaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val peliculaDao: PeliculaDao
+    private val peliculaRepository: PeliculaRepository
 ) : ViewModel() {
 
+    // Obtener las películas desde el repositorio
     val peliculas: StateFlow<List<PeliculaListado>> =
-        peliculaDao.obtenerTodas()
-            .map { entidades ->
-                entidades.map { pelicula ->
+        peliculaRepository.obtenerTodas()
+            .map { lista ->
+                lista.map { pelicula ->
                     PeliculaListado(
                         titulo = pelicula.titulo,
                         genero = pelicula.genero,
-                        estado = if (pelicula.vista) "Vista" else "Pendiente",
+                        estado = if (pelicula.vista) {
+                            "Vista"
+                        } else {
+                            "Pendiente"
+                        },
                         calificacion = pelicula.calificacion ?: 0,
                         id = pelicula.id
                     )
@@ -37,14 +43,26 @@ class HomeViewModel @Inject constructor(
                 initialValue = emptyList()
             )
 
+    // Eliminar una película por su identificador
     fun eliminarPelicula(id: Int) {
         if (id <= 0) return
 
         viewModelScope.launch {
-            val pelicula = peliculaDao.obtenerPorId(id).first()
+            try {
+                val pelicula = peliculaRepository
+                    .obtenerPorId(id)
+                    .first()
 
-            if (pelicula != null) {
-                peliculaDao.eliminar(pelicula)
+                if (pelicula != null) {
+                    peliculaRepository.eliminar(pelicula)
+                }
+
+            } catch (e: Exception) {
+                Log.e(
+                    "MI_CINE",
+                    "Error al eliminar película",
+                    e
+                )
             }
         }
     }

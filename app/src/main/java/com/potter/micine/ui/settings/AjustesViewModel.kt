@@ -1,4 +1,3 @@
-
 package com.potter.micine.ui.settings
 
 import android.content.Context
@@ -10,6 +9,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
+import androidx.lifecycle.viewModelScope
+import com.potter.micine.data.repository.PeliculaRepository
+import kotlinx.coroutines.launch
 
 // ESTADO DE LA PANTALLA DE AJUSTES
 data class AjustesUiState(
@@ -20,8 +22,29 @@ data class AjustesUiState(
 
 @HiltViewModel
 class AjustesViewModel @Inject constructor(
-    @ApplicationContext context: Context
+    @ApplicationContext context: Context,
+    private val peliculaRepository: PeliculaRepository
 ) : ViewModel() {
+
+    fun borrarHistorial() {
+        viewModelScope.launch {
+            try {
+                val eliminadas = peliculaRepository.borrarHistorial()
+
+                android.util.Log.d(
+                    "MI_CINE",
+                    "Películas eliminadas: $eliminadas"
+                )
+
+            } catch (e: Exception) {
+                android.util.Log.e(
+                    "MI_CINE",
+                    "Error al borrar el historial",
+                    e
+                )
+            }
+        }
+    }
 
     // PREFERENCIAS GUARDADAS
     private val preferencias = context.getSharedPreferences(

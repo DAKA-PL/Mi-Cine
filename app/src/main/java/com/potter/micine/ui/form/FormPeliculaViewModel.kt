@@ -1,4 +1,3 @@
-
 package com.potter.micine.ui.form
 
 import androidx.lifecycle.ViewModel
@@ -12,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
 
 @HiltViewModel
 class FormPeliculaViewModel @Inject constructor(
@@ -22,6 +22,61 @@ class FormPeliculaViewModel @Inject constructor(
 
     val uiState: StateFlow<FormPeliculaUIState> =
         _uiState.asStateFlow()
+
+    private var peliculaIdEnEdicion: Int? = null
+
+
+    fun cargarPeliculaParaEditar(id: Int) {
+        if (id <= 0) return
+
+        viewModelScope.launch {
+            try {
+                val pelicula = peliculaRepository
+                    .obtenerPorId(id)
+                    .first()
+
+                if (pelicula == null) {
+                    _uiState.update {
+                        it.copy(error = "No se encontró la película.")
+                    }
+                    return@launch
+                }
+
+                peliculaIdEnEdicion = pelicula.id
+
+                _uiState.update { estado ->
+
+                    val generos =
+                        if (pelicula.genero in estado.generosDisponibles) {
+                            estado.generosDisponibles
+                        } else {
+                            estado.generosDisponibles + pelicula.genero
+                        }
+
+                    val indiceGenero =
+                        generos.indexOf(pelicula.genero)
+
+                    estado.copy(
+                        titulo = pelicula.titulo,
+                        generosDisponibles = generos,
+                        generoId = indiceGenero + 1L,
+                        esVista = pelicula.vista,
+                        calificacion = pelicula.calificacion ?: 0,
+                        error = null,
+                        estaGuardado = false
+                    )
+                }
+
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        error = "No se pudo cargar la película."
+                    )
+                }
+            }
+        }
+    }
+
 
     fun actualizarTitulo(valor: String) {
         _uiState.update {
@@ -182,7 +237,23 @@ class FormPeliculaViewModel @Inject constructor(
             }
 
             try {
-                peliculaRepository.insertar(pelicula)
+                val idActual = peliculaIdEnEdicion
+
+                if (idActual == null) {
+                    // Agregar película nueva
+                    peliculaRepository.insertar(pelicula)
+                } else {
+                    // Actualizar película existente
+                    val filasActualizadas = peliculaRepository.actualizar(
+                        pelicula.copy(id = idActual)
+                    )
+
+                    if (filasActualizadas == 0) {
+                        throw IllegalStateException(
+                            "La película ya no existe."
+                        )
+                    }
+                }
 
                 _uiState.update {
                     it.copy(estaGuardado = true)
